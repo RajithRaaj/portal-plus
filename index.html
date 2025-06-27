@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Plus</title>
+    <!-- Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter (preferred for modern, clean look) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base styles for HTML and Body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #1A2A44, #0A142A); /* Dark, subtle blue/grey gradient */
+            color: #E0E6EE; /* Off-white text color */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling if content overflows */
+            padding: 1rem; /* Overall padding for responsiveness */
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Card container styles - premium but not flashy */
+        .portal-plus-card {
+            background-color: rgba(33, 44, 65, 0.95); /* Darker blue-grey, slightly transparent for depth */
+            border-radius: 1.5rem; /* Rounded corners */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* More pronounced shadow */
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px; /* Slightly wider than Lite for more content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden; /* Important for section transitions */
+            border: 1px solid rgba(255, 215, 0, 0.3); /* Subtle gold border */
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+        }
+
+        /* Profile image styling */
+        .profile-img {
+            width: 130px; /* Slightly larger image */
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #FFD700; /* Gold border */
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); /* Matching glow */
+            margin-bottom: 1.5rem;
+        }
+
+        /* Text styles */
+        .name {
+            font-size: 2.5rem; /* Larger name */
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+            color: #FFFFFF; /* Pure white for name */
+        }
+
+        .profession {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #C0C8D6; /* Lighter text for profession */
+            margin-bottom: 0.75rem;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #94A3B8; /* Muted gray for tagline */
+            margin-bottom: 2rem;
+        }
+
+        /* Contact Info */
+        .contact-info p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #CBD5E1;
+        }
+        .contact-info p:last-child {
+            margin-bottom: 0;
+        }
+        .contact-info i {
+            color: #FFD700; /* Gold icons */
+        }
+        .contact-info span {
+            word-break: break-all;
+            transition: color 0.2s ease;
+        }
+        .contact-info span:hover {
+            color: #FFEB3B; /* Lighter gold on hover */
+            text-decoration: underline;
+        }
+
+        /* Micro Stats */
+        .micro-stats span {
+            font-size: 0.9rem;
+            background: rgba(255, 215, 0, 0.1); /* Gold tint background */
+            padding: 0.3rem 0.7rem;
+            border-radius: 0.5rem;
+            margin: 0 0.25rem;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: #FFD700; /* Gold text for stats */
+            display: inline-block;
+        }
+
+        /* Social Icons */
+        .social-icons a {
+            color: #E0E6EE; /* Light text for icons */
+            transition: all 0.2s ease-in-out;
+            font-size: 1.8rem; /* Larger social icons */
+        }
+        .social-icons a:hover {
+            color: #FFD700; /* Gold on hover */
+            transform: translateY(-2px);
+        }
+
+        /* Action buttons - general style */
+        .action-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            padding: 0.85rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        /* Primary action button */
+        .action-button.primary {
+            background-color: #FFD700; /* Gold background */
+            color: #1A2A44; /* Dark blue text */
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+        }
+        .action-button.primary:hover {
+            background-color: #DAA520; /* Darker gold on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Secondary action buttons */
+        .action-button.secondary {
+            background-color: #475569; /* Slate gray background */
+            color: #E0E6EE; /* Light text */
+        }
+        .action-button.secondary:hover {
+            background-color: #64748B; /* Lighter slate gray on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Section Navigation Tabs */
+        .section-tabs {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding-bottom: 0.5rem;
+        }
+        .section-tabs button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: #94A3B8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden; /* For underline animation */
+        }
+        .section-tabs button.active {
+            color: #FFD700; /* Active tab in gold */
+            font-weight: 700;
+        }
+        .section-tabs button::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #FFD700;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+        .section-tabs button.active::after {
+            transform: scaleX(1);
+        }
+        .section-tabs button:hover:not(.active) {
+            color: #C0C8D6;
+        }
+
+        /* Content Sections within the card */
+        .card-section {
+            width: 100%;
+            text-align: left;
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: 0; /* Position sections on top of each other */
+            left: 0;
+            height: 100%;
+            padding: 2rem; /* Match card padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            overflow-y: auto; /* Enable scrolling for content */
+        }
+        .card-section.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            position: static; /* Take up space when active */
+        }
+        .card-section p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .card-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .card-section ul {
+            list-style: disc;
+            margin-left: 1.5rem;
+        }
+        .card-section li {
+            margin-bottom: 0.5rem;
+            color: #C0C8D6;
+        }
+         .card-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        .card-section::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .card-section::-webkit-scrollbar-thumb {
+            background: #FFD700; /* Gold scrollbar */
+            border-radius: 10px;
+        }
+
+        /* Watermark */
+        .watermark {
+            margin-top: 2rem;
+            font-size: 14px;
+            color: #64748B;
+            text-align: center;
+        }
+        .watermark a {
+            color: #FFEB3B; /* Lighter gold for link */
+            text-decoration: none;
+        }
+        .watermark a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast Message */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background-color: #FFD700; /* Gold toast */
+            color: #1A2A44; /* Dark blue text */
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, #1A2A44, #0A142A); /* Match body background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 215, 0, 0.2); /* Light gold base */
+            border-top: 8px solid #FFD700; /* Vibrant gold spinning part */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .portal-plus-card {
+                padding: 1.5rem;
+            }
+            .name {
+                font-size: 2.2rem;
+            }
+            .profession {
+                font-size: 1rem;
+            }
+            .tagline {
+                font-size: 1.05rem;
+            }
+            .contact-info p {
+                font-size: 0.95rem;
+            }
+            .social-icons a {
+                font-size: 1.6rem;
+            }
+            .action-button {
+                padding: 0.75rem 1rem;
+            }
+            .card-section {
+                padding: 1.5rem;
+            }
+            .card-section h2 {
+                font-size: 1.5rem;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Main Portal Plus Card -->
+    <div class="portal-plus-card" id="portalPlusCard">
+        <!-- Main profile content container (initially active) -->
+        <div id="profileSection" class="card-section active flex-col items-center justify-between">
+            <div>
+                <!-- Profile Picture -->
+                <img src="https://i.ibb.co/3yfW4hNX/Untitled-design-19-photoaidcom-cropped.png" alt="Profile Picture" class="profile-img">
+
+                <!-- Name & Profession -->
+                <h1 class="name" id="profileName">rajith raaj</h1>
+                <p class="profession" id="professionText">manager : zenora</p>
+                <p class="tagline" id="profileTagline">Tech Enthusiast</p>
+                
+                <!-- Micro Stats -->
+                <div class="micro-stats flex justify-center gap-2 mb-6 flex-wrap">
+                    <span>Expertise in coding</span>
+                    <span>IT Integration</span>
+                    <span>Strategic Planning</span>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="contact-info w-full mb-6">
+                <p><i class="fas fa-phone"></i> <span id="phoneNumber" class="cursor-pointer">+91 98400123456</span></p>
+                <p><i class="fas fa-envelope"></i> <span id="emailAddress" class="cursor-pointer">rajith@zenora.com</span></p>
+            </div>
+            
+            <!-- Social Icons -->
+            <div class="social-icons flex gap-6 text-3xl mb-8">
+                <a href="https://linkedin.com/in/rajithraaj" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.instagram.com/zenora_lines/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                <a href="https://zenora.com/" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i></a>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col gap-3 w-full">
+                <button class="action-button primary" id="addToContacts">
+                    <i class="fas fa-address-book"></i> Add to Contacts
+                </button>
+                <button class="action-button secondary" id="shareProfile">
+                    <i class="fas fa-share-alt"></i> Share Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- About Me Section -->
+        <div id="aboutSection" class="card-section flex-col items-center justify-start">
+            <button class="back-button" id="backButtonFromAbout">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h2 class="text-2xl font-bold mt-12 mb-4 text-white">About Rajith</h2>
+            <div class="about-content w-full px-4 text-gray-300">
+                <p class="mb-4">
+                    rajith is a highly accomplished professional serving as manager at zenora, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
+                </p>
+                <p>
+                    Beyond his corporate responsibilities, rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section Navigation Tabs -->
+        <div class="section-tabs flex justify-center w-full">
+            <button class="active" data-section="profileSection">Profile</button>
+            <button data-section="aboutSection">About</button>
+            <!-- Add more tabs for other sections as needed for Portal Plus features -->
+        </div>
+    </div>
+
+    <!-- Footer Watermark -->
+    <p class="watermark">
+        Portal Plus | <a href="https://zenora-ai.vercel.app/" target="_blank" rel="noopener noreferrer">ZENORA AI ©</a>
+    </p>
+
+    <!-- Toast Notification Element -->
+    <div id="toast"></div>
+
+    <script>
+        // --- Configuration & Data ---
+        const profileData = {
+            name: "Rajith",
+            profession: "manager - zenora",
+            tagline: "Detailed Professional Profile",
+            phoneNumber: "+91 98400123456",
+            emailAddress: "rajith@zenora.com",
+            microStats: ["Expertise in Logistics", "IT Integration", "Strategic Planning", "Project Management"],
+            social: {
+                linkedin: "https://linkedin.com/in/rajithraaj",
+                instagram: "https://www.instagram.com/zenora_lines/",
+                website: "https://zenora.com/"
+            },
+            aboutContent: `
+                rajith is a highly accomplished professional serving as DGM at Ashokleyland, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
+                Beyond his corporate responsibilities, rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
+            `
+        };
+
+        // --- DOM Elements ---
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const profileName = document.getElementById('profileName');
+        const professionText = document.getElementById('professionText');
+        const tagline = document.getElementById('profileTagline');
+        const phoneNumberSpan = document.getElementById('phoneNumber');
+        const emailAddressSpan = document.getElementById('emailAddress');
+        const microStatsContainer = document.querySelector('.micro-stats');
+        const socialIconsContainer = document.querySelector('.social-icons');
+        const addToContactsBtn = document.getElementById('addToContacts');
+        const shareProfileBtn = document.getElementById('shareProfile');
+        const toast = document.getElementById('toast');
+
+        const portalPlusCard = document.getElementById('portalPlusCard');
+        const profileSection = document.getElementById('profileSection');
+        const aboutSection = document.getElementById('aboutSection');
+        const backButtonFromAbout = document.getElementById('backButtonFromAbout');
+        const sectionTabs = document.querySelector('.section-tabs');
+        const aboutContentElement = aboutSection.querySelector('.about-content');
+
+
+        // --- Utility Functions ---
+        /**
+         * Displays a temporary toast notification.
+         * @param {string} message - The message to display.
+         */
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+            triggerHapticFeedback();
+        }
+
+        /**
+         * Triggers a short vibration if the device supports it.
+         */
+        function triggerHapticFeedback() {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
+        }
+
+        /**
+         * Copies text to the clipboard.
+         * @param {string} text - The text to copy.
+         */
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied!");
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showToast("Failed to copy.");
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        /**
+         * Shows a specific section within the card and hides others.
+         * @param {HTMLElement} sectionToShow - The section element to make active.
+         */
+        function showSection(sectionToShow) {
+            // Get all sections within the card
+            const allSections = portalPlusCard.querySelectorAll('.card-section');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+                // Temporarily disable pointer events for inactive sections during transition
+                section.style.pointerEvents = 'none';
+            });
+
+            // Activate the desired section
+            sectionToShow.classList.add('active');
+            // Re-enable pointer events for the active section after a slight delay
+            setTimeout(() => {
+                sectionToShow.style.pointerEvents = 'auto';
+            }, 300); // Match CSS transition duration
+        }
+
+        // --- Event Listeners ---
+        // Initial loading sequence for the overlay
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => loadingOverlay.style.display = 'none', 500);
+            }, 1000);
+        });
+
+        // Tap-to-copy for Phone/Email
+        phoneNumberSpan.addEventListener('click', () => copyToClipboard(profileData.phoneNumber.trim()));
+        emailAddressSpan.addEventListener('click', () => copyToClipboard(profileData.emailAddress.trim()));
+
+        // Add to Contacts functionality
+        addToContactsBtn.addEventListener('click', () => {
+            const vCardContent = `BEGIN:VCARD
+VERSION:3.0
+FN:${profileData.name}
+TITLE:${profileData.profession}
+TEL:${profileData.phoneNumber}
+EMAIL:${profileData.emailAddress}
+URL:${profileData.linkedin || ''}
+END:VCARD`;
+            const blob = new Blob([vCardContent], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${profileData.name.replace(/\s/g, '_')}_PortalPlus.vcf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Contact Saved!");
+        });
+
+        // Share Profile functionality
+        shareProfileBtn.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `Portal Plus for ${profileData.name}`,
+                        text: `Connect with ${profileData.name} via their Portal Plus:`,
+                        url: window.location.href
+                    });
+                    showToast("Profile Shared Successfully!");
+                } catch (error) {
+                    console.error('Error sharing:', error);
+                    showToast("Share failed or cancelled.");
+                }
+            } else {
+                const textToShare = `Check out my Portal Plus: ${window.location.href}`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(textToShare)}`;
+                window.open(whatsappUrl, '_blank');
+                showToast("Opening WhatsApp for sharing...");
+            }
+            triggerHapticFeedback();
+        });
+
+        // Section tab navigation
+        sectionTabs.addEventListener('click', (event) => {
+            const targetButton = event.target.closest('button');
+            if (targetButton && targetButton.dataset.section) {
+                const sectionId = targetButton.dataset.section;
+                const targetSection = document.getElementById(sectionId);
+
+                // Update active button state
+                sectionTabs.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                targetButton.classList.add('active');
+
+                showSection(targetSection);
+            }
+        });
+
+        // Back button from About Me section
+        backButtonFromAbout.addEventListener('click', () => {
+            const profileTabButton = sectionTabs.querySelector('[data-section="profileSection"]');
+            profileTabButton.click(); // Simulate click on Profile tab
+        });
+
+        // --- Initial Data Load & Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate profile data
+            profileName.textContent = profileData.name;
+            professionText.textContent = profileData.profession;
+            tagline.textContent = profileData.tagline;
+            phoneNumberSpan.textContent = profileData.phoneNumber;
+            emailAddressSpan.textContent = profileData.emailAddress;
+
+            // Populate Micro Stats
+            microStatsContainer.innerHTML = '';
+            profileData.microStats.forEach(stat => {
+                const span = document.createElement('span');
+                span.textContent = stat;
+                microStatsContainer.appendChild(span);
+            });
+
+            // Populate About Content
+            aboutContentElement.innerHTML = profileData.aboutContent;
+
+            // Initially show the profile section
+            showSection(profileSection);
+
+            // Hide loading overlay after initial load and setup
+            setTimeout(() => {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
