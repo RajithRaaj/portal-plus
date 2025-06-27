@@ -14,7 +14,8 @@
         /* Base styles for HTML and Body */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom right, #1A2A44, #0A142A); /* Dark, subtle blue/grey gradient */
+            /* Static blue gradient background */
+            background: linear-gradient(to bottom right, #2c3e50, #2c3e50, #34495e); /* Dark blue-grey gradient */
             color: #E0E6EE; /* Off-white text color */
             display: flex;
             flex-direction: column;
@@ -26,23 +27,61 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Card container styles - premium but not flashy */
+        /* Card container styles - now with 3D flip properties */
         .portal-plus-card {
-            background-color: rgba(33, 44, 65, 0.95); /* Darker blue-grey, slightly transparent for depth */
+            background-color: transparent; /* Card itself is transparent, front/back have background */
             border-radius: 1.5rem; /* Rounded corners */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* More pronounced shadow */
-            padding: 2rem;
             width: 100%;
             max-width: 420px; /* Slightly wider than Lite for more content */
+            height: 600px; /* Fixed height for consistent flip */
+            position: relative;
+            transform-style: preserve-3d; /* Essential for 3D flip */
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Ease-out-back for overshoot flip */
+            overflow: hidden; /* Ensure content stays within the card while flipping */
+        }
+
+        /* Front and Back of the Card styles */
+        .card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(33, 44, 65, 0.95); /* Darker blue-grey, slightly transparent for depth */
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3); /* Subtle gold border */
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            position: relative;
-            overflow: hidden; /* Important for section transitions */
-            border: 1px solid rgba(255, 215, 0, 0.3); /* Subtle gold border */
-            backdrop-filter: blur(15px) saturate(180%);
-            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            padding: 2rem; /* Consistent padding */
+            backface-visibility: hidden; /* Hides the back of the element during flip */
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Removed overflow-y: auto here to prevent scrolling on the main faces */
+            justify-content: space-between; /* Space out content on main face */
+        }
+
+        .card-front {
+            transform: rotateY(0deg);
+            /* Ensure content inside doesn't overflow */
+            overflow: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            /* Ensure content inside doesn't overflow */
+            overflow: hidden;
+        }
+
+        /* Flip animation when 'flipped' class is added to container */
+        .portal-plus-card.flipped .card-front {
+            transform: rotateY(-180deg);
+        }
+        .portal-plus-card.flipped .card-back {
+            transform: rotateY(0deg);
         }
 
         /* Profile image styling */
@@ -54,6 +93,10 @@
             border: 4px solid #FFD700; /* Gold border */
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); /* Matching glow */
             margin-bottom: 1.5rem;
+            /* Centering via flex container and auto margins */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* Text styles */
@@ -165,97 +208,69 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Section Navigation Tabs */
-        .section-tabs {
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-            padding-bottom: 0.5rem;
-        }
-        .section-tabs button {
-            background: none;
-            border: none;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            color: #94A3B8;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden; /* For underline animation */
-        }
-        .section-tabs button.active {
-            color: #FFD700; /* Active tab in gold */
-            font-weight: 700;
-        }
-        .section-tabs button::after {
-            content: '';
-            position: absolute;
+        /* About Section (now within card-back) */
+        .about-section-back {
+            position: absolute; /* Position over initial buttons on back */
+            top: 0;
             left: 0;
-            bottom: 0;
             width: 100%;
-            height: 2px;
-            background-color: #FFD700;
-            transform: scaleX(0);
-            transform-origin: center;
-            transition: transform 0.3s ease;
-        }
-        .section-tabs button.active::after {
-            transform: scaleX(1);
-        }
-        .section-tabs button:hover:not(.active) {
-            color: #C0C8D6;
-        }
-
-        /* Content Sections within the card */
-        .card-section {
-            width: 100%;
-            text-align: left;
-            opacity: 0;
-            visibility: hidden;
-            position: absolute;
-            top: 0; /* Position sections on top of each other */
-            left: 0;
             height: 100%;
-            padding: 2rem; /* Match card padding */
+            background-color: rgba(33, 44, 65, 0.98); /* Match card-back, slightly more opaque */
+            border-radius: 1.5rem;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            overflow-y: auto; /* Enable scrolling for content */
+            overflow-y: auto; /* Allow scrolling for content that exceeds card height */
         }
-        .card-section.active {
+
+        .about-section-back.show {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
-            position: static; /* Take up space when active */
         }
-        .card-section p {
-            margin-bottom: 1rem;
+
+        .about-section-back .back-button {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: none;
+            border: none;
+            color: #E0E6EE;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s ease;
+        }
+        .about-section-back .back-button:hover {
+            color: #FFFFFF;
+        }
+
+        .about-content-back {
+            margin-top: 3rem; /* Space for the back button */
+            flex-grow: 1;
+            /* overflow-y: auto; -- Removed to prevent scrollbar unless content genuinely overflows fixed card height */
+            padding-right: 0.5rem;
+            text-align: left;
             line-height: 1.6;
         }
-        .card-section h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #FFD700;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        .card-section ul {
-            list-style: disc;
-            margin-left: 1.5rem;
-        }
-        .card-section li {
-            margin-bottom: 0.5rem;
-            color: #C0C8D6;
-        }
-         .card-section::-webkit-scrollbar {
+
+        .about-content-back::-webkit-scrollbar {
             width: 6px;
         }
-        .card-section::-webkit-scrollbar-track {
+        .about-content-back::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
         }
-        .card-section::-webkit-scrollbar-thumb {
+        .about-content-back::-webkit-scrollbar-thumb {
             background: #FFD700; /* Gold scrollbar */
             border-radius: 10px;
         }
@@ -304,7 +319,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom right, #1A2A44, #0A142A); /* Match body background */
+            background: linear-gradient(to bottom right, #2c3e50, #2c3e50, #34495e); /* Match body background */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -326,6 +341,10 @@
 
         @media (max-width: 640px) {
             .portal-plus-card {
+                height: 550px; /* Adjust height for mobile */
+                padding: 1rem;
+            }
+            .card-face {
                 padding: 1.5rem;
             }
             .name {
@@ -346,12 +365,15 @@
             .action-button {
                 padding: 0.75rem 1rem;
             }
-            .card-section {
+            .about-section-back {
                 padding: 1.5rem;
             }
-            .card-section h2 {
-                font-size: 1.5rem;
-                margin-top: 2rem;
+            .about-section-back .back-button {
+                top: 1rem;
+                left: 1rem;
+            }
+            .about-content-back {
+                margin-top: 2.5rem;
             }
         }
     </style>
@@ -364,70 +386,76 @@
 
     <!-- Main Portal Plus Card -->
     <div class="portal-plus-card" id="portalPlusCard">
-        <!-- Main profile content container (initially active) -->
-        <div id="profileSection" class="card-section active flex-col items-center justify-between">
+        <!-- Front of the Card -->
+        <div class="card-face card-front" id="cardFront">
             <div>
                 <!-- Profile Picture -->
                 <img src="https://i.ibb.co/3yfW4hNX/Untitled-design-19-photoaidcom-cropped.png" alt="Profile Picture" class="profile-img">
 
                 <!-- Name & Profession -->
-                <h1 class="name" id="profileName">rajith raaj</h1>
-                <p class="profession" id="professionText">manager : zenora</p>
-                <p class="tagline" id="profileTagline">Tech Enthusiast</p>
+                <h1 class="name" id="profileName">Rajith</h1>
+                <p class="profession" id="professionText">DGM - Ashokleyland</p>
+                <p class="tagline" id="profileTagline">Detailed Professional Profile</p>
                 
                 <!-- Micro Stats -->
                 <div class="micro-stats flex justify-center gap-2 mb-6 flex-wrap">
-                    <span>Expertise in coding</span>
                     <span>IT Integration</span>
                     <span>Strategic Planning</span>
+                    <span>Project Management</span>
                 </div>
             </div>
 
             <!-- Contact Information -->
             <div class="contact-info w-full mb-6">
-                <p><i class="fas fa-phone"></i> <span id="phoneNumber" class="cursor-pointer">+91 98400123456</span></p>
-                <p><i class="fas fa-envelope"></i> <span id="emailAddress" class="cursor-pointer">rajith@zenora.com</span></p>
+                <p><i class="fas fa-phone"></i> <span id="phoneNumber" class="cursor-pointer">+91 9840028788</span></p>
+                <p><i class="fas fa-envelope"></i> <span id="emailAddress" class="cursor-pointer">rajith@carrywings.com</span></p>
             </div>
             
             <!-- Social Icons -->
             <div class="social-icons flex gap-6 text-3xl mb-8">
                 <a href="https://linkedin.com/in/rajithraaj" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
-                <a href="https://www.instagram.com/zenora_lines/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-                <a href="https://zenora.com/" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i></a>
+                <a href="https://www.instagram.com/carrywings_lines/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                <a href="https://carrywings.com/" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i></a>
+                <a href="https://wa.me/919840028788" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a> <!-- WhatsApp Icon Added -->
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Action Buttons on Front -->
             <div class="flex flex-col gap-3 w-full">
                 <button class="action-button primary" id="addToContacts">
                     <i class="fas fa-address-book"></i> Add to Contacts
                 </button>
-                <button class="action-button secondary" id="shareProfile">
+            </div>
+        </div>
+
+        <!-- Back of the Card -->
+        <div class="card-face card-back" id="cardBack">
+            <h2 class="text-2xl font-bold mt-4 mb-6 text-white">Connect & Learn More</h2>
+            
+            <!-- Initial buttons on the back -->
+            <div id="backMainButtons" class="flex flex-col items-center gap-4 w-full flex-grow justify-center">
+                <button class="action-button primary" id="aboutMeButtonBack">
+                    <i class="fas fa-info-circle"></i> About Me
+                </button>
+                <button class="action-button secondary" id="shareProfileBack">
                     <i class="fas fa-share-alt"></i> Share Profile
                 </button>
             </div>
-        </div>
 
-        <!-- About Me Section -->
-        <div id="aboutSection" class="card-section flex-col items-center justify-start">
-            <button class="back-button" id="backButtonFromAbout">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <h2 class="text-2xl font-bold mt-12 mb-4 text-white">About Rajith</h2>
-            <div class="about-content w-full px-4 text-gray-300">
-                <p class="mb-4">
-                    rajith is a highly accomplished professional serving as manager at zenora, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
-                </p>
-                <p>
-                    Beyond his corporate responsibilities, rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
-                </p>
+            <!-- About Me Section (overlays buttons when active) -->
+            <div id="aboutSectionBack" class="about-section-back">
+                <button class="back-button" id="backButtonFromAboutBack">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h2 class="text-2xl font-bold mt-12 mb-4 text-white">About Rajith</h2>
+                <div class="about-content-back w-full px-4 text-gray-300">
+                    <p class="mb-4">
+                        Rajith is a highly accomplished professional serving as DGM at Ashokleyland, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
+                    </p>
+                    <p>
+                        Beyond his corporate responsibilities, Rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
+                    </p>
+                </div>
             </div>
-        </div>
-
-        <!-- Section Navigation Tabs -->
-        <div class="section-tabs flex justify-center w-full">
-            <button class="active" data-section="profileSection">Profile</button>
-            <button data-section="aboutSection">About</button>
-            <!-- Add more tabs for other sections as needed for Portal Plus features -->
         </div>
     </div>
 
@@ -442,25 +470,31 @@
     <script>
         // --- Configuration & Data ---
         const profileData = {
-            name: "Rajith",
-            profession: "manager - zenora",
+            name: "Rajith", // Updated name to Rajith
+            profession: "DGM - Ashokleyland",
             tagline: "Detailed Professional Profile",
-            phoneNumber: "+91 98400123456",
-            emailAddress: "rajith@zenora.com",
-            microStats: ["Expertise in Logistics", "IT Integration", "Strategic Planning", "Project Management"],
+            phoneNumber: "+91 9840028788",
+            emailAddress: "rajith@carrywings.com", // Updated email to Rajith
+            microStats: ["IT Integration", "Strategic Planning", "Project Management"], // Removed "Expertise in Logistics"
             social: {
                 linkedin: "https://linkedin.com/in/rajithraaj",
-                instagram: "https://www.instagram.com/zenora_lines/",
-                website: "https://zenora.com/"
+                instagram: "https://www.instagram.com/carrywings_lines/",
+                website: "https://carrywings.com/",
+                whatsapp: "https://wa.me/919840028788" // Added WhatsApp link
             },
             aboutContent: `
-                rajith is a highly accomplished professional serving as DGM at Ashokleyland, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
-                Beyond his corporate responsibilities, rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
+                Rajith is a highly accomplished professional serving as DGM at Ashokleyland, where he demonstrates exceptional leadership and strategic acumen. His extensive background in the automotive industry is marked by a consistent ability to drive innovation, optimize operations, and achieve ambitious corporate objectives.
+                Beyond his corporate responsibilities, Rajith is a visionary committed to exploring and implementing cutting-edge technological solutions. He actively seeks opportunities for cross-functional collaboration, believing in the power of synergistic partnerships to foster mutual growth and overcome complex challenges.
             `
         };
 
         // --- DOM Elements ---
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const portalPlusCard = document.getElementById('portalPlusCard');
+        const cardFront = document.getElementById('cardFront');
+        const cardBack = document.getElementById('cardBack');
+
+        // Front card elements
         const profileName = document.getElementById('profileName');
         const professionText = document.getElementById('professionText');
         const tagline = document.getElementById('profileTagline');
@@ -469,15 +503,18 @@
         const microStatsContainer = document.querySelector('.micro-stats');
         const socialIconsContainer = document.querySelector('.social-icons');
         const addToContactsBtn = document.getElementById('addToContacts');
-        const shareProfileBtn = document.getElementById('shareProfile');
+
+        // Back card elements
+        const backMainButtons = document.getElementById('backMainButtons');
+        const aboutMeButtonBack = document.getElementById('aboutMeButtonBack');
+        const shareProfileBack = document.getElementById('shareProfileBack');
+        const aboutSectionBack = document.getElementById('aboutSectionBack');
+        const backButtonFromAboutBack = document.getElementById('backButtonFromAboutBack');
+        const aboutContentBackElement = aboutSectionBack.querySelector('.about-content-back');
+        
         const toast = document.getElementById('toast');
 
-        const portalPlusCard = document.getElementById('portalPlusCard');
-        const profileSection = document.getElementById('profileSection');
-        const aboutSection = document.getElementById('aboutSection');
-        const backButtonFromAbout = document.getElementById('backButtonFromAbout');
-        const sectionTabs = document.querySelector('.section-tabs');
-        const aboutContentElement = aboutSection.querySelector('.about-content');
+        let isFlipped = false; // State to track card flip
 
 
         // --- Utility Functions ---
@@ -526,24 +563,16 @@
         }
 
         /**
-         * Shows a specific section within the card and hides others.
-         * @param {HTMLElement} sectionToShow - The section element to make active.
+         * Toggles the flip state of the card with a 3D animation.
          */
-        function showSection(sectionToShow) {
-            // Get all sections within the card
-            const allSections = portalPlusCard.querySelectorAll('.card-section');
-            allSections.forEach(section => {
-                section.classList.remove('active');
-                // Temporarily disable pointer events for inactive sections during transition
-                section.style.pointerEvents = 'none';
-            });
-
-            // Activate the desired section
-            sectionToShow.classList.add('active');
-            // Re-enable pointer events for the active section after a slight delay
-            setTimeout(() => {
-                sectionToShow.style.pointerEvents = 'auto';
-            }, 300); // Match CSS transition duration
+        function flipCard() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                portalPlusCard.classList.add('flipped');
+            } else {
+                portalPlusCard.classList.remove('flipped');
+            }
+            triggerHapticFeedback();
         }
 
         // --- Event Listeners ---
@@ -553,6 +582,17 @@
                 loadingOverlay.style.opacity = '0';
                 setTimeout(() => loadingOverlay.style.display = 'none', 500);
             }, 1000);
+        });
+
+        // Event listener for card flip on click (only if not clicking an interactive element)
+        portalPlusCard.addEventListener('click', (e) => {
+            // Check if the clicked element is an interactive element (button, link, input)
+            // or if it's within the scrollable 'about-content-back' area (to allow scrolling)
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('.action-button') || e.target.closest('.about-content-back')) {
+                return; // Do not flip if clicking on an interactive element or the scrollable content
+            }
+            // If the click is anywhere else on the card face, flip it
+            flipCard();
         });
 
         // Tap-to-copy for Phone/Email
@@ -581,8 +621,8 @@ END:VCARD`;
             showToast("Contact Saved!");
         });
 
-        // Share Profile functionality
-        shareProfileBtn.addEventListener('click', async () => {
+        // Share Profile functionality (from back of card)
+        shareProfileBack.addEventListener('click', async () => {
             if (navigator.share) {
                 try {
                     await navigator.share({
@@ -604,25 +644,26 @@ END:VCARD`;
             triggerHapticFeedback();
         });
 
-        // Section tab navigation
-        sectionTabs.addEventListener('click', (event) => {
-            const targetButton = event.target.closest('button');
-            if (targetButton && targetButton.dataset.section) {
-                const sectionId = targetButton.dataset.section;
-                const targetSection = document.getElementById(sectionId);
-
-                // Update active button state
-                sectionTabs.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-                targetButton.classList.add('active');
-
-                showSection(targetSection);
-            }
+        // 'About Me' button on the back of the card
+        aboutMeButtonBack.addEventListener('click', () => {
+            // Hide initial buttons on the back and show about section
+            backMainButtons.style.opacity = '0';
+            backMainButtons.style.pointerEvents = 'none';
+            setTimeout(() => {
+                backMainButtons.style.visibility = 'hidden';
+                aboutSectionBack.classList.add('show');
+            }, 300);
         });
 
-        // Back button from About Me section
-        backButtonFromAbout.addEventListener('click', () => {
-            const profileTabButton = sectionTabs.querySelector('[data-section="profileSection"]');
-            profileTabButton.click(); // Simulate click on Profile tab
+        // 'Back' button from About Me section on the back of the card
+        backButtonFromAboutBack.addEventListener('click', () => {
+            // Hide about section and show initial buttons on the back
+            aboutSectionBack.classList.remove('show');
+            setTimeout(() => {
+                backMainButtons.style.visibility = 'visible';
+                backMainButtons.style.opacity = '1';
+                backMainButtons.style.pointerEvents = 'auto';
+            }, 300);
         });
 
         // --- Initial Data Load & Setup ---
@@ -642,11 +683,24 @@ END:VCARD`;
                 microStatsContainer.appendChild(span);
             });
 
-            // Populate About Content
-            aboutContentElement.innerHTML = profileData.aboutContent;
+            // Populate Social Icons
+            socialIconsContainer.innerHTML = ''; // Clear existing
+            if (profileData.social.linkedin) {
+                socialIconsContainer.innerHTML += `<a href="${profileData.social.linkedin}" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>`;
+            }
+            if (profileData.social.instagram) {
+                socialIconsContainer.innerHTML += `<a href="${profileData.social.instagram}" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>`;
+            }
+            if (profileData.social.website) {
+                socialIconsContainer.innerHTML += `<a href="${profileData.social.website}" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i></a>`;
+            }
+            if (profileData.social.whatsapp) {
+                socialIconsContainer.innerHTML += `<a href="${profileData.social.whatsapp}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>`;
+            }
 
-            // Initially show the profile section
-            showSection(profileSection);
+
+            // Populate About Content for the back of the card
+            aboutContentBackElement.innerHTML = profileData.aboutContent;
 
             // Hide loading overlay after initial load and setup
             setTimeout(() => {
